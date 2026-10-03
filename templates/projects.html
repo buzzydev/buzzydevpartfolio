@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Projects — {{ site_cfg.website_title }}{% endblock %}
+{% block meta_description %}Projects built by {{ site_cfg.profile_name }}.{% endblock %}
+{% block og_title %}Projects — {{ site_cfg.website_title }}{% endblock %}
+{% block content %}
+<section class="wrap section">
+  <div class="section-head"><h1>Projects</h1></div>
+  {% if projects %}<div class="grid grid-3">{% for p in projects %}{% include "_project_card.html" %}{% endfor %}</div>
+  {% else %}<p class="empty">No projects yet.</p>{% endif %}
+</section>
+{% endblock %}

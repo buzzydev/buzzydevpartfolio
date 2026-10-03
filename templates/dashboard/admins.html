@@ -1,0 +1,25 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Admins{% endblock %}
+{% block content %}
+<div class="head"><h1>Admins</h1>{% if user.is_superuser %}<a class="btn" href="{% url 'dashboard:admin_create' %}"><i class="fa-solid fa-plus"></i> New admin</a>{% endif %}</div>
+{% if not user.is_superuser %}<p class="muted">Only a Super Administrator can create admins or change ranks.</p>{% endif %}
+<div class="panel table-wrap">
+<table>
+  <thead><tr><th>Username</th><th>Email</th><th>Rank</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for u, manageable in rows %}
+    <tr><td>{{ u.username }}</td><td>{{ u.email }}</td>
+      <td>{% if user.is_superuser and not u.is_superuser and u.pk != user.pk %}
+        <form method="post" action="{% url 'dashboard:admin_rank' u.pk %}" class="inline">{% csrf_token %}
+          <select name="role">{% for value, label in roles %}<option value="{{ value }}" {% if value == u.role %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+          <button type="submit">Set rank</button></form>
+        {% else %}{{ u.get_role_display }}{% endif %}</td>
+      <td>{% if u.is_active %}<span class="pill ok">Active</span>{% else %}<span class="pill off">Inactive</span>{% endif %}</td>
+      <td class="actions">{% if manageable %}
+        <form method="post" action="{% url 'dashboard:user_toggle' u.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{% url 'dashboard:admins' %}"><button type="submit" {% if u.is_active %}class="danger"{% endif %}>{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}</td></tr>
+  {% empty %}<tr><td colspan="5" class="muted">No admins yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% include "dashboard/_pager.html" %}
+{% endblock %}

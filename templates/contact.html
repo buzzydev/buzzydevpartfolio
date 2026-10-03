@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Contact — {{ site_cfg.website_title }}{% endblock %}
+{% block meta_description %}Get in touch with {{ site_cfg.profile_name }}.{% endblock %}
+{% block og_title %}Contact — {{ site_cfg.website_title }}{% endblock %}
+{% block content %}
+<section class="wrap section contact">
+  <div>
+    <h1>Contact</h1>
+    <p class="lead">Send a message and I'll reply by email.</p>
+    <ul class="contact-list">
+      {% if site_cfg.email %}<li><i class="fa-solid fa-envelope"></i> <a href="mailto:{{ site_cfg.email }}">{{ site_cfg.email }}</a></li>{% endif %}
+      {% if site_cfg.phone %}<li><i class="fa-solid fa-phone"></i> {{ site_cfg.phone }}</li>{% endif %}
+      {% if site_cfg.location %}<li><i class="fa-solid fa-location-dot"></i> {{ site_cfg.location }}</li>{% endif %}
+    </ul>
+  </div>
+  <form method="post" class="glass form" novalidate>
+    {% csrf_token %}
+    {{ form.token }}
+    <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    {% if form.non_field_errors %}<p class="error">{{ form.non_field_errors }}</p>{% endif %}
+    {% for f in form.visible_fields %}{% if f.name != "website" %}
+    <div class="field">
+      <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+      {{ f }}
+      {% for e in f.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    </div>
+    {% endif %}{% endfor %}
+    {% for e in form.token.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    {% for e in form.website.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    <button class="btn" type="submit">Send message</button>
+  </form>
+</section>
+{% endblock %}

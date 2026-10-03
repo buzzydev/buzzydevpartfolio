@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <canvas class="hero-canvas" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="hello">Hi, I'm {{ site_cfg.profile_name }}</p>
+      <h1>{{ site_cfg.profile_title }}</h1>
+      <p class="lead">{{ site_cfg.hero_text }}</p>
+      <div class="hero-actions">
+        <a class="btn" href="{% url 'portfolio:projects' %}">View my work</a>
+        <a class="btn btn-ghost" href="{% url 'portfolio:contact' %}">Contact me</a>
+      </div>
+      <ul class="socials" aria-label="Social links">
+        {% for link in social_links %}<li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.get_platform_display }}"><i class="{{ link.icon }}"></i></a></li>{% endfor %}
+      </ul>
+    </div>
+    <div class="hero-photo">
+      <div class="ring"></div>
+      <div class="photo glass">
+        {% if site_cfg.profile_image %}<img src="{{ site_cfg.profile_image.url }}" alt="{{ site_cfg.profile_name }}" width="480" height="480">{% else %}<span>{{ site_cfg.profile_name|slice:":1" }}</span>{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if stats %}
+<section class="wrap stats" aria-label="Numbers">
+  {% for s in stats %}<div class="stat glass"><strong>{{ s.value }}{{ s.suffix }}</strong><span>{{ s.label }}</span></div>{% endfor %}
+</section>
+{% endif %}
+
+<section class="wrap section">
+  <div class="section-head">
+    <h2>Selected projects</h2>
+    <a class="more" href="{% url 'portfolio:projects' %}">All projects <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+  {% if projects %}<div class="grid grid-3">{% for p in projects %}{% include "_project_card.html" %}{% endfor %}</div>
+  {% else %}<p class="empty">No projects yet. Add the first one in the dashboard.</p>{% endif %}
+</section>
+
+{% if services %}
+<section class="wrap section">
+  <div class="section-head"><h2>What I do</h2></div>
+  <div class="grid grid-3">
+    {% for s in services %}
+    <article class="card glass service">
+      <i class="{{ s.icon }}"></i>
+      <h3>{{ s.title }}</h3>
+      <p>{{ s.description }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="wrap section">
+  <div class="cta glass">
+    <h2>Have a project in mind?</h2>
+    <p>Tell me what you need and I'll get back to you by email.</p>
+    <a class="btn" href="{% url 'portfolio:contact' %}">Start a conversation</a>
+  </div>
+</section>
+{% endblock %}

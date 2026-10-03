@@ -1,0 +1,63 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_cfg.seo_title|default:site_cfg.website_title }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ site_cfg.seo_description|default:site_cfg.website_description }}{% endblock %}">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:site_name" content="{{ site_cfg.website_title }}">
+  <meta property="og:title" content="{% block og_title %}{{ site_cfg.seo_title|default:site_cfg.website_title }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ site_cfg.seo_description|default:site_cfg.website_description }}{% endblock %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  {% block og_image %}{% if site_cfg.profile_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_cfg.profile_image.url }}">{% endif %}{% endblock %}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0a0a0a">
+  {% if site_cfg.favicon %}<link rel="icon" href="{{ site_cfg.favicon.url }}">{% endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+{% with page=request.resolver_match.url_name %}
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="{% url 'portfolio:home' %}">{{ site_cfg.profile_name }}</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav"><i class="fa-solid fa-bars"></i></button>
+    <nav id="nav" class="nav">
+      <a href="{% url 'portfolio:home' %}" {% if page == 'home' %}aria-current="page"{% endif %}>Home</a>
+      <a href="{% url 'portfolio:about' %}" {% if page == 'about' %}aria-current="page"{% endif %}>About</a>
+      <a href="{% url 'portfolio:projects' %}" {% if page == 'projects' or page == 'project_detail' %}aria-current="page"{% endif %}>Projects</a>
+      <a href="{% url 'portfolio:contact' %}" {% if page == 'contact' %}aria-current="page"{% endif %}>Contact</a>
+      {% if user.is_authenticated %}
+        {% if user.is_dashboard_user %}<a class="btn btn-small" href="{% url 'dashboard:index' %}">Dashboard</a>{% endif %}
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="linklike" type="submit">Log out</button></form>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+{% endwith %}
+
+{% if messages %}
+<div class="wrap toasts">
+  {% for m in messages %}<p class="toast toast-{{ m.tags }}" role="status">{{ m }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer class="site-footer">
+  <div class="wrap foot">
+    <p>&copy; {% now "Y" %} {{ site_cfg.profile_name }}</p>
+    <ul class="socials" aria-label="Social links">
+      {% for link in social_links %}<li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ link.get_platform_display }}"><i class="{{ link.icon }}"></i></a></li>{% endfor %}
+    </ul>
+    {% if not user.is_authenticated %}<a class="foot-login" href="{% url 'login' %}">Admin login</a>{% endif %}
+  </div>
+</footer>
+<script src="{% static 'js/site.js' %}" defer></script>
+</body>
+</html>

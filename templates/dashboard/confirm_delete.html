@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Delete{% endblock %}
+{% block content %}
+<div class="panel confirm">
+  <h1>Delete "{{ obj }}"?</h1>
+  <p class="muted">This can't be undone.</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn btn-danger" type="submit">Delete</button>
+    <a class="btn btn-ghost" href="{% url back %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

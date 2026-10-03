@@ -1,0 +1,18 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Error{% endblock %}</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body class="error-page">
+  <main class="error-box">
+    <p class="code">{% block code %}{% endblock %}</p>
+    <h1>{% block heading %}{% endblock %}</h1>
+    <p>{% block text %}{% endblock %}</p>
+    <a class="btn" href="/">Back to home</a>
+  </main>
+</body>
+</html>

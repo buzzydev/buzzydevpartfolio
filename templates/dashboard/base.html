@@ -1,0 +1,31 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Dashboard{% endblock %} — {{ site_cfg.website_title }}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dash">
+<aside class="side" id="side">
+  <a class="side-brand" href="{% url 'portfolio:home' %}" title="Open website">{{ site_cfg.profile_name }}</a>
+  <nav>
+    {% for label, url, section, icon in dash_nav %}
+    <a href="{% url url %}" {% if request.path == '/dashboard/' and section == 'dashboard' %}class="active"{% elif section != 'dashboard' and section in request.path %}class="active"{% endif %}><i class="{{ icon }}"></i> {{ label }}</a>
+    {% endfor %}
+  </nav>
+  <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></form>
+</aside>
+<div class="main">
+  <header class="top">
+    <button class="menu" onclick="document.getElementById('side').classList.toggle('open')" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+    <span class="who">{{ user.username }} <em>{{ user.get_role_display }}</em></span>
+  </header>
+  {% if messages %}{% for m in messages %}<p class="flash flash-{{ m.tags }}" role="status">{{ m }}</p>{% endfor %}{% endif %}
+  <main class="content">{% block content %}{% endblock %}</main>
+</div>
+</body>
+</html>

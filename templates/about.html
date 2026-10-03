@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}About — {{ site_cfg.website_title }}{% endblock %}
+{% block meta_description %}About {{ site_cfg.profile_name }}: skills, experience and background.{% endblock %}
+{% block og_title %}About — {{ site_cfg.website_title }}{% endblock %}
+{% block content %}
+<section class="wrap section about">
+  <div class="about-photo glass">
+    {% if site_cfg.profile_image %}<img src="{{ site_cfg.profile_image.url }}" alt="{{ site_cfg.profile_name }}" loading="lazy" width="480" height="480">{% else %}<span>{{ site_cfg.profile_name|slice:":1" }}</span>{% endif %}
+  </div>
+  <div class="about-copy">
+    <h1>About me</h1>
+    <p class="lead">{{ site_cfg.about_text|default:site_cfg.hero_text|linebreaksbr }}</p>
+    <dl class="facts">
+      <div><dt>Name</dt><dd>{{ site_cfg.profile_name }}</dd></div>
+      {% if site_cfg.location %}<div><dt>Location</dt><dd>{{ site_cfg.location }}</dd></div>{% endif %}
+      {% if site_cfg.email %}<div><dt>Email</dt><dd><a href="mailto:{{ site_cfg.email }}">{{ site_cfg.email }}</a></dd></div>{% endif %}
+      {% if site_cfg.phone %}<div><dt>Phone</dt><dd>{{ site_cfg.phone }}</dd></div>{% endif %}
+      {% if site_cfg.education %}<div><dt>Education</dt><dd>{{ site_cfg.education|linebreaksbr }}</dd></div>{% endif %}
+    </dl>
+  </div>
+</section>
+
+{% if stats %}
+<section class="wrap stats" aria-label="Numbers">
+  {% for s in stats %}<div class="stat glass"><strong>{{ s.value }}{{ s.suffix }}</strong><span>{{ s.label }}</span></div>{% endfor %}
+</section>
+{% endif %}
+
+<section class="wrap section">
+  <div class="section-head"><h2>Skills</h2></div>
+  {% for category, items in skills.items %}
+  <h3 class="cat">{{ category }}</h3>
+  <div class="grid grid-3">
+    {% for s in items %}
+    <div class="skill glass">
+      <div class="skill-top"><span>{% if s.icon %}<i class="{{ s.icon }}"></i>{% endif %} {{ s.name }}</span><span>{{ s.level }}%</span></div>
+      <div class="bar" role="progressbar" aria-valuenow="{{ s.level }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ s.name }}"><i style="width:{{ s.level }}%"></i></div>
+      {% if s.description %}<p>{{ s.description }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% empty %}<p class="empty">Skills will appear here once added.</p>
+  {% endfor %}
+</section>
+
+{% if experiences %}
+<section class="wrap section">
+  <div class="section-head"><h2>Experience</h2></div>
+  <ol class="timeline">
+    {% for e in experiences %}
+    <li>
+      <div class="glass tl-card">
+        <h3>{{ e.position }} <span>at {{ e.company }}</span></h3>
+        <p class="when">{{ e.start_date|date:"M Y" }} – {% if e.end_date %}{{ e.end_date|date:"M Y" }}{% else %}Present{% endif %}</p>
+        {% if e.description %}<p>{{ e.description|linebreaksbr }}</p>{% endif %}
+        <ul class="tags">{% for t in e.tech_list %}<li>{{ t }}</li>{% endfor %}</ul>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+{% endblock %}

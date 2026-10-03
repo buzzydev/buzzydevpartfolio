@@ -1,0 +1,28 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="totals">
+  {% for label, value, icon in totals %}<div class="panel total"><i class="{{ icon }}"></i><strong>{{ value }}</strong><span>{{ label }}</span></div>{% endfor %}
+</div>
+<div class="charts">
+  <div class="panel"><h2>Messages, last 14 days</h2><canvas id="c-messages" height="200"></canvas></div>
+  <div class="panel"><h2>Projects added per month</h2><canvas id="c-projects" height="200"></canvas></div>
+  <div class="panel"><h2>Users by rank</h2><canvas id="c-users" height="200"></canvas></div>
+</div>
+<div class="panel">
+  <h2>Latest messages {% if unread %}<span class="badge">{{ unread }} unread</span>{% endif %}</h2>
+  {% for m in recent %}
+  <a class="row-link" href="{% url 'dashboard:message_detail' m.pk %}"><span>{% if not m.is_read %}<b class="dot"></b>{% endif %}{{ m.name }} — {{ m.subject }}</span><time>{{ m.created_at|date:"M j, H:i" }}</time></a>
+  {% empty %}<p class="muted">No messages yet.</p>{% endfor %}
+</div>
+{{ charts|json_script:"chart-data" }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+  var d = JSON.parse(document.getElementById("chart-data").textContent);
+  Chart.defaults.color = "#a1a1aa"; Chart.defaults.borderColor = "rgba(255,255,255,.08)";
+  var opts = { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } };
+  new Chart("c-messages", { type: "line", data: { labels: d.messages.labels, datasets: [{ data: d.messages.data, borderColor: "#22d3ee", backgroundColor: "rgba(34,211,238,.15)", fill: true, tension: .3 }] }, options: opts });
+  new Chart("c-projects", { type: "bar", data: { labels: d.projects.labels, datasets: [{ data: d.projects.data, backgroundColor: "#7c6bff", borderRadius: 6 }] }, options: opts });
+  new Chart("c-users", { type: "doughnut", data: { labels: d.users.labels, datasets: [{ data: d.users.data, backgroundColor: ["#3f3f46", "#22d3ee", "#7c6bff", "#f59e0b", "#fb7185", "#34d399"], borderWidth: 0 }] }, options: { plugins: { legend: { position: "right" } } } });
+</script>
+{% endblock %}

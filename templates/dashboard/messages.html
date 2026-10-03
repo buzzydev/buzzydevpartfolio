@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Messages{% endblock %}
+{% block content %}
+<div class="head"><h1>Messages</h1>
+  <div class="tabs">
+    <a href="?" {% if status == 'all' %}class="active"{% endif %}>All</a>
+    <a href="?status=unread" {% if status == 'unread' %}class="active"{% endif %}>Unread</a>
+    <a href="?status=read" {% if status == 'read' %}class="active"{% endif %}>Read</a>
+  </div>
+</div>
+<div class="panel table-wrap">
+<table>
+  <thead><tr><th></th><th>From</th><th>Subject</th><th>Received</th><th></th></tr></thead>
+  <tbody>
+  {% for m in page %}
+    <tr class="{% if not m.is_read %}unread{% endif %}">
+      <td>{% if not m.is_read %}<b class="dot" title="Unread"></b>{% endif %}</td>
+      <td>{{ m.name }}<br><small class="muted">{{ m.email }}</small></td>
+      <td><a href="{% url 'dashboard:message_detail' m.pk %}">{{ m.subject }}</a></td>
+      <td>{{ m.created_at|date:"M j, Y H:i" }}</td>
+      <td class="actions">
+        <form method="post" action="{% url 'dashboard:message_toggle' m.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button type="submit">Mark as {% if m.is_read %}unread{% else %}read{% endif %}</button></form>
+        {% if user.role >= 2 %}<form method="post" action="{% url 'dashboard:message_delete' m.pk %}" onsubmit="return confirm('Delete this message?')">{% csrf_token %}<button class="danger" type="submit">Delete</button></form>{% endif %}
+      </td>
+    </tr>
+  {% empty %}<tr><td colspan="5" class="muted">No messages.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% include "dashboard/_pager.html" %}
+{% endblock %}

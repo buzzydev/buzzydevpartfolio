@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ cfg.label }}s{% endblock %}
+{% block content %}
+<div class="head"><h1>{{ cfg.label }}s</h1><a class="btn" href="{% url 'dashboard:'|add:key|add:'_create' %}"><i class="fa-solid fa-plus"></i> New {{ cfg.label|lower }}</a></div>
+<div class="panel table-wrap">
+<table>
+  <thead><tr>{% for h in headers %}<th>{{ h }}</th>{% endfor %}<th></th></tr></thead>
+  <tbody>
+  {% for obj, values in rows %}
+    <tr>{% for v in values %}<td>{{ v }}</td>{% endfor %}
+      <td class="actions"><a href="{% url 'dashboard:'|add:key|add:'_edit' obj.pk %}">Edit</a> <a class="danger" href="{% url 'dashboard:'|add:key|add:'_delete' obj.pk %}">Delete</a></td></tr>
+  {% empty %}<tr><td colspan="{{ headers|length|add:1 }}" class="muted">Nothing here yet. Create the first {{ cfg.label|lower }}.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% include "dashboard/_pager.html" %}
+{% endblock %}
